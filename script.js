@@ -1,12 +1,12 @@
-let personagem; // Declaração global do objeto personagem
+let personagem; // Declaracao global do objeto personagem
 let habilidadesData;
 let habilidade;
 
-document.addEventListener('deviceready', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Solicita e espera pelos dados do personagem
         console.log('Esperando dados do personagem...');
-        const personagemData = await carregarDados('1-personagem.json');
+        const personagemData = await carregarDados('1-personagem');
         console.log('Dados do personagem recebidos:', personagemData);
 
         // Inicializa a instância da classe Personagem com os dados recebidos
@@ -14,7 +14,7 @@ document.addEventListener('deviceready', async () => {
         atualizarInfoPersonagem(personagem); // Atualiza a interface com os dados do personagem
 
         // Solicita e espera pelos dados das habilidades
-        habilidadesData = await carregarDados('1-habilidades.json');
+        habilidadesData = await carregarDados('1-habilidades');
         console.log('Dados das habilidades recebidos:', habilidadesData);
 
         // Exibe as habilidades na interface
@@ -24,37 +24,22 @@ document.addEventListener('deviceready', async () => {
     }
 });
 
-function carregarDados(filename) {
+function carregarDados(key) {
     return new Promise((resolve, reject) => {
-        const filePath = cordova.file.dataDirectory + filename;
-        window.resolveLocalFileSystemURL(filePath, (fileEntry) => {
-            fileEntry.file((file) => {
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    console.log('MyAppLog: Conteúdo do arquivo carregado:', reader.result);
-                    try {
-                        const data = JSON.parse(this.result);
-                        resolve(data);
-                    } catch (e) {
-                        reject(e);
-                    }
-                };
-                reader.onerror = function(e) {
-                    console.error('MyAppLog: Erro ao ler o arquivo:', e);
-                    mostrarMensagem('Erro ao ler o arquivo: ' + e);  // Alerta para erros de leitura
-                    alert(filename);
-                    reject(e);
-                };
-                reader.readAsText(file);
-            }, reject);
-        }, (err) => {
-            console.error('MyAppLog: Erro ao resolver o caminho do arquivo:', err);
-            mostrarMensagem('Erro ao resolver o caminho do arquivo: ' + err);  // Alerta para erros de resolução de caminho
-            alert(filename);
-            reject(err);
-        });
+        const data = localStorage.getItem(key);
+        if (data) {
+            try {
+                const parsedData = JSON.parse(data);
+                resolve(parsedData);
+            } catch (e) {
+                reject(e);
+            }
+        } else {
+            reject(new Error('Dados não encontrados.'));
+        }
     });
 }
+
   
 class Personagem {
     constructor(data) {
@@ -93,7 +78,7 @@ class Personagem {
         this.periciaSorte = data.periciaSorte;
     }
 
-    // Métodos para retornar detalhes específicos
+    // Metodos para retornar detalhes específicos
     getVida() {
         return this.vida;
     }
@@ -143,7 +128,7 @@ class Personagem {
         };
     }
 
-    // Métodos para modificar atributos
+    // Metodos para modificar atributos
     reduzirEnergia(valor) {
         this.energia -= valor;
     }
@@ -160,7 +145,7 @@ class Personagem {
         this.vida += valor;
     }
 
-    // Métodos para modificar atributos do objeto Personagem
+    // Metodos para modificar atributos do objeto Personagem
     reduzirSanidade(valor) {
         this.sanidade -= valor;
         // Adicione aqui qualquer lógica adicional, como validações ou atualizações de interface
@@ -171,7 +156,7 @@ class Personagem {
         // Adicione aqui qualquer lógica adicional, como validações ou atualizações de interface
     }
 
-    // Método para retornar o status geral
+    // Metodo para retornar o status geral
     obterStatus() {
         return `Vida: ${this.vida} | Energia: ${this.energia} | Vigor: ${this.vigor} | Intelecto: ${this.intelecto} | Presença: ${this.presenca} | Força: ${this.forca} | Agilidade: ${this.agilidade}`;
     }
@@ -235,7 +220,7 @@ class HabilidadeBase {
     }
 
     obterDanoTotal() {
-        return this.nome === "Lucifer" ? `Dano Total Acumulado (${this.nome}): ${danoTotal}` : `(${this.nome}) Teste de Presença - Manifestação`;
+        return this.nome === "Lucifer" ? `Dano Total Acumulado (${this.nome}): ${danoTotal}` : `(${this.nome}) Teste de Presença - Manifestacao`;
     }
 }
 
@@ -264,7 +249,7 @@ function exibirProximaMensagem() {
 
     // Verifica se há mensagens na fila
     if (filaDeMensagens.length > 0) {
-        // Obtém a próxima mensagem da fila
+        // Obtem a próxima mensagem da fila
         const mensagem = filaDeMensagens.shift(); // Remove e retorna o primeiro elemento da fila
 
         // Define a mensagem no diálogo e exibe
@@ -354,9 +339,9 @@ class Belzebub extends HabilidadeBase {
         }
         let maiorDado = Math.max(...dadosPresenca);
 
-        mostrarMensagem(`Teste de Presença - Manifestação: ${dadosPresenca} => maior dado: ${maiorDado}`);
+        mostrarMensagem(`Teste de Presença - Manifestacao: ${dadosPresenca} => maior dado: ${maiorDado}`);
 
-        let mensagem = `Teste de Presença - Manifestação (com Perícia): ${maiorDado}\n`;
+        let mensagem = `Teste de Presença - Manifestacao (com Perícia): ${maiorDado}\n`;
 
         if (maiorDado <= 10) {
             mensagem += "1-10: Toma somente ½ do dano físico de todas as fontes";
@@ -386,7 +371,7 @@ function openTab(tabName) {
         if (content.id === tabName) {
             content.classList.add('active');
             if (tabName === 'info') {
-                atualizarInfoPersonagem(Personagem); // Chama a atualização ao abrir a guia "Info"
+                atualizarInfoPersonagem(Personagem); // Chama a atualizacao ao abrir a guia "Info"
                 // Inicia o timer para atualizar a cada 5 segundos
                 setInterval(atualizarInfoPersonagem, 5000); // 5000 milissegundos = 5 segundos
             }
@@ -424,7 +409,7 @@ function openSubtab(tabName, subtabName) {
     }
 }
 
-// Função para verificar e exibir mensagem quando nenhuma habilidade está selecionada
+// Funcao para verificar e exibir mensagem quando nenhuma habilidade está selecionada
 function verificarHabilidadeSelecionada() {
     var habilidadeNome = document.getElementById('habilidade-nome').innerText.trim();
     
@@ -442,10 +427,10 @@ verificarHabilidadeSelecionada();
 function escolherHabilidade1(habilidadeNome) {
     if (habilidadeNome === 'LuciferPassiva') {
         habilidade = new LuciferPassiva(personagem);
-        document.getElementById('habilidade-descricao').textContent = "Lucifer - Habilidade Passiva: Teste de Presença - Manifestação";
+        document.getElementById('habilidade-descricao').textContent = "Lucifer - Habilidade Passiva: Teste de Presença - Manifestacao";
     } else if (habilidadeNome === 'Belzebub') {
         habilidade = new Belzebub(personagem);
-        document.getElementById('habilidade-descricao').textContent = "Belzebub - Teste de Presença - Manifestação (com Perícia)";
+        document.getElementById('habilidade-descricao').textContent = "Belzebub - Teste de Presença - Manifestacao (com Perícia)";
     }
 
     openSubtab('skills', 'habilidades');
@@ -484,7 +469,7 @@ function escolherHabilidade(habilidadeId, habilidadesData) {
             console.log('Habilidade encontrada:', habilidade);
             document.getElementById('habilidade-nome').textContent = habilidade.nome;
             document.getElementById('dano-total').textContent = `Dano: ${habilidade.dano}`;
-            document.getElementById('habilidade-descricao').textContent = habilidade.descricao; // Atualiza a descrição da habilidade
+            document.getElementById('habilidade-descricao').textContent = habilidade.descricao; // Atualiza a descricao da habilidade
 
             // Limpa os botões existentes
             const botoesHabilidade = document.getElementById('botoes-habilidade');
@@ -498,7 +483,7 @@ function escolherHabilidade(habilidadeId, habilidadesData) {
             };
             botoesHabilidade.appendChild(botaoUsar);
 
-            atualizarStatus(habilidade.status); // Chama a função para atualizar o status
+            atualizarStatus(habilidade.status); // Chama a funcao para atualizar o status
         } else {
             console.error('Habilidade não encontrada:', habilidadeId);
         }
@@ -526,7 +511,7 @@ function openTab(tabName) {
         if (content.id === tabName) {
             content.classList.add('active');
             if (tabName === 'info') {
-                atualizarInfoPersonagem(Personagem); // Chama a atualização ao abrir a guia "Info"
+                atualizarInfoPersonagem(Personagem); // Chama a atualizacao ao abrir a guia "Info"
                 // Inicia o timer para atualizar a cada 5 segundos
                 setInterval(atualizarInfoPersonagem, 5000); // 5000 milissegundos = 5 segundos
             }
@@ -551,8 +536,8 @@ function openSubtab(tab, subtab) {
     tabElement.querySelector(`div[onclick="openSubtab('${tab}', '${subtab}')"]`).classList.add('active');
 }
 
-// Função para exibir as habilidades na interface
-// Função para exibir as habilidades na interface
+// Funcao para exibir as habilidades na interface
+// Funcao para exibir as habilidades na interface
 function exibirHabilidades(habilidadesData) {
     try {
         console.log("Dados de habilidades carregados:", habilidadesData);
@@ -624,7 +609,7 @@ function rolarDano(expressao) {
     
     // Iterar sobre cada termo de dano
     termos.forEach(termo => {
-        // Encontrar a posição do primeiro 'd'
+        // Encontrar a posicao do primeiro 'd'
         const indexD = termo.indexOf('d');
         
         // Extrair a quantidade e faces do dado
@@ -665,7 +650,7 @@ function rolarDano(expressao) {
         // Adicionar ao total de dano
         totalDano += totalTermo;
         
-        // Armazenar as rolagens deste termo para exibição
+        // Armazenar as rolagens deste termo para exibicao
         rolagensTotais.push({
             expressao: `${quantidade}d${faces}${modificador !== 0 ? '+' + modificador : ''}`,
             rolagens: rolagens.join(', '),
@@ -696,7 +681,7 @@ function atualizarEnergia(custo, cooldown) {
 
 
 function usarHabilidade() {
-    // Obtém o nome da habilidade ativa na aba "Habilidades"
+    // Obtem o nome da habilidade ativa na aba "Habilidades"
     const habilidadeNome = document.getElementById('habilidade-nome').textContent.trim();
 
     if (!habilidadeNome) {
@@ -716,11 +701,11 @@ function usarHabilidade() {
         if (habilidade) {
             console.log('Habilidade encontrada:', habilidade);
             document.getElementById('habilidade-nome').textContent = habilidade.nome;
-            atualizarDescricaoHabilidade(habilidade.nome); // Chamando função para buscar e atualizar descrição
+            atualizarDescricaoHabilidade(habilidade.nome); // Chamando funcao para buscar e atualizar descricao
             document.getElementById('dano-total').textContent = `Dano: ${habilidade.dano}`;
             document.getElementById('status').textContent = `Status: ${habilidade.status}`;
             aplicarHabilidade(habilidade);
-            atualizarStatus(habilidade.status); // Chama a função para atualizar o status
+            atualizarStatus(habilidade.status); // Chama a funcao para atualizar o status
         } else {
             mostrarMensagem('Habilidade não encontrada:', habilidadeNome);
         }
@@ -735,8 +720,8 @@ function atualizarDescricaoHabilidade(nomeHabilidade) {
         // Procura a habilidade pelo nome na variável global window.habilidadesData
         const habilidade = window.habilidadesData.habilidades.find(h => h.nome === nomeHabilidade);
         if (habilidade) {
-            console.log('Descrição da habilidade:', habilidade.descricao);
-            document.getElementById('habilidade-descricao').textContent = habilidade.descricao; // Atualiza a descrição da habilidade
+            console.log('Descricao da habilidade:', habilidade.descricao);
+            document.getElementById('habilidade-descricao').textContent = habilidade.descricao; // Atualiza a descricao da habilidade
         } else {
             console.error('Habilidade não encontrada:', nomeHabilidade);
         }
@@ -751,12 +736,12 @@ function aplicarHabilidade(habilidade) {
     atualizarEnergia(habilidade.custo, habilidade.cooldown);
     console.log(`Dano rolado: ${danoRolado}`);
     document.getElementById('dano-total').textContent = `Dano: ${danoRolado}`;
-    atualizarStatus(habilidade.status); // Chama a função para atualizar o status
+    atualizarStatus(habilidade.status); // Chama a funcao para atualizar o status
 }
 
 function sair() {
     console.log("Sair clicado");
-    // Implementar a lógica para a ação de sair
+    // Implementar a lógica para a acao de sair
 }  
 
 function ajustarEnergia(multiplicador) {
@@ -770,7 +755,7 @@ function ajustarEnergia(multiplicador) {
     } else if (multiplicador === -1) {
         personagem.reduzirEnergia(Math.abs(valorAjuste)); // Usando Math.abs para garantir que o valor seja positivo
     } else {
-        mostrarMensagem("Operação inválida para ajuste de energia");
+        mostrarMensagem("Operacao inválida para ajuste de energia");
         return;
     }
     
@@ -789,7 +774,7 @@ function ajustarSanidade(multiplicador) {
     } else if (multiplicador === -1) {
         personagem.reduzirSanidade(Math.abs(valorAjuste));
     } else {
-        mostrarMensagem("Operação inválida para ajuste de sanidade");
+        mostrarMensagem("Operacao inválida para ajuste de sanidade");
         return;
     }
     
@@ -809,7 +794,7 @@ function ajustarVida(multiplicador) {
     } else if (multiplicador === -1) {
         personagem.reduzirVida(Math.abs(valorAjuste)); // Usando Math.abs para garantir que o valor seja positivo
     } else {
-        mostrarMensagem("Operação inválida para ajuste de vida");
+        mostrarMensagem("Operacao inválida para ajuste de vida");
         return;
     }
     
@@ -887,7 +872,7 @@ function rolarDadosCalculo(atributo, pericia, numeroVantagens, modificador) {
     }
 }
 
-function ação(atributo, pericia, numeroVantagens, modificador) {
+function acao(atributo, pericia, numeroVantagens, modificador) {
     let valorAtributo = 0;
     let valorPericia = 0;
 
@@ -909,7 +894,7 @@ function ação(atributo, pericia, numeroVantagens, modificador) {
             valorAtributo = personagem.presenca;
             break;
         default:
-            valorAtributo = 0; // Atributo padrão caso não haja correspondência
+            valorAtributo = 0; // Atributo padrão caso não haja correspondencia
     }
 
     // Verifica a perícia selecionada e atribui o valor correspondente
@@ -932,8 +917,8 @@ function ação(atributo, pericia, numeroVantagens, modificador) {
         case 'calamidade':
             valorPericia = personagem.periciaCalamidade;
             break;
-        case 'ciências':
-            valorPericia = personagem.periciaCiências;
+        case 'ciencias':
+            valorPericia = personagem.periciaCiencias;
             break;
         case 'diplomacia':
             valorPericia = personagem.periciaDiplomacia;
@@ -944,20 +929,20 @@ function ação(atributo, pericia, numeroVantagens, modificador) {
         case 'iniciativa':
             valorPericia = personagem.periciaIniciativa;
             break;
-        case 'intuição':
-            valorPericia = personagem.periciaIntuição;
+        case 'intuicao':
+            valorPericia = personagem.periciaIntuicao;
             break;
-        case 'investigação':
-            valorPericia = personagem.periciaInvestigação;
+        case 'investigacao':
+            valorPericia = personagem.periciaInvestigacao;
             break;
         case 'medicina':
             valorPericia = personagem.periciaMedicina;
             break;
-        case 'manifestação':
-            valorPericia = personagem.periciaManifestação;
+        case 'manifestacao':
+            valorPericia = personagem.periciaManifestacao;
             break;
-        case 'percepção':
-            valorPericia = personagem.periciaPercepção;
+        case 'percepcao':
+            valorPericia = personagem.periciaPercepcao;
             break;
         case 'pilotagem':
             valorPericia = personagem.periciaPilotagem;
@@ -965,11 +950,11 @@ function ação(atributo, pericia, numeroVantagens, modificador) {
         case 'pontaria':
             valorPericia = personagem.periciaPontaria;
             break;
-        case 'sobrevivência':
-            valorPericia = personagem.periciaSobrevivência;
+        case 'sobrevivencia':
+            valorPericia = personagem.periciaSobrevivencia;
             break;
-        case 'técnica':
-            valorPericia = personagem.periciaTécnica;
+        case 'tecnica':
+            valorPericia = personagem.periciaTecnica;
             break;
         case 'vontade':
             valorPericia = personagem.periciaVontade;
@@ -978,10 +963,10 @@ function ação(atributo, pericia, numeroVantagens, modificador) {
             valorPericia = personagem.periciaSorte;
             break;
         default:
-            valorPericia = 0; // Perícia padrão caso não haja correspondência
+            valorPericia = 0; // Perícia padrão caso não haja correspondencia
     }
 
-    // Chama a função rolarDadosCalculo com os parâmetros ajustados
+    // Chama a funcao rolarDadosCalculo com os parâmetros ajustados
     return rolarDadosCalculo(valorAtributo, valorPericia, numeroVantagens, modificador);
 }
 
@@ -991,16 +976,16 @@ function executarAcao() {
     let numeroVantagens = parseInt(document.getElementById('vantagensInput').value);
     let modificador = parseInt(document.getElementById('modificadorInput').value);
 
-    let resultado = ação(atributo, pericia, numeroVantagens, modificador);
+    let resultado = acao(atributo, pericia, numeroVantagens, modificador);
     
     // Exibir o resultado em um mostrarMensagem
-    mostrarMensagem(`Resultado da Ação: ${resultado}`);
+    mostrarMensagem(`Resultado da Acao: ${resultado}`);
 }
 
 function executarAtaque() {
     let numeroVantagens = parseInt(document.getElementById('vantagens-ataque').value);
     let modificador = parseInt(document.getElementById('modificador-ataque').value);
-    let resultado = ação('força', 'luta', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numérico
+    let resultado = acao('força', 'luta', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
     
     // Exibir o resultado em um mostrarMensagem
     mostrarMensagem(`Resultado do Ataque: ${resultado}`);
@@ -1009,7 +994,7 @@ function executarAtaque() {
 function executarDefesa() {
     let numeroVantagens = parseInt(document.getElementById('vantagens-defesa').value);
     let modificador = parseInt(document.getElementById('modificador-defesa').value);
-    let resultado = ação('vigor', 'fortitude', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numérico
+    let resultado = acao('vigor', 'fortitude', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
     
     // Exibir o resultado em um mostrarMensagem
     mostrarMensagem(`Resultado do Ataque: ${resultado}`);
@@ -1018,7 +1003,7 @@ function executarDefesa() {
 function executarEsquiva() {
     let numeroVantagens = parseInt(document.getElementById('vantagens-esquiva').value);
     let modificador = parseInt(document.getElementById('modificador-esquiva').value);
-    let resultado = ação('agilidade', 'acrobacia', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numérico
+    let resultado = acao('agilidade', 'acrobacia', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
     
     // Exibir o resultado em um mostrarMensagem
     mostrarMensagem(`Resultado do Ataque: ${resultado}`);
@@ -1027,7 +1012,7 @@ function executarEsquiva() {
 function executarContraAtaque() {
     let numeroVantagens = parseInt(document.getElementById('vantagens-contraataque').value);
     let modificador = parseInt(document.getElementById('modificador-contraataque').value);
-    let resultado = ação('força', 'luta', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numérico
+    let resultado = acao('força', 'luta', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
     
     // Exibir o resultado em um mostrarMensagem
     mostrarMensagem(`Resultado do Ataque: ${resultado}`);
@@ -1069,10 +1054,6 @@ async function salvarStatus() {
             return;
         }
 
-        const dirPath = cordova.file.dataDirectory;
-        const filePath = `${dirPath}${nome}-personagem.json`;
-        const namePath = `${nome}-personagem.json`;
-
         const updatedData = {
             vida: parseInt(document.getElementById('vida').value),
             vidaMax: parseInt(document.getElementById('vidaMax').value),
@@ -1109,18 +1090,19 @@ async function salvarStatus() {
             periciaSorte: parseInt(document.getElementById('periciaSorte').value)
         };
 
-        console.log('MyAppLog: Salvando dados em:', filePath);
-        await writeFile(namePath, filePath, JSON.stringify(updatedData, null, 2));
+        console.log('MyAppLog: Salvando dados em localStorage.');
+        localStorage.setItem(`${nome}-personagem`, JSON.stringify(updatedData, null, 2));
         console.log('MyAppLog: Status do personagem salvo com sucesso!');
         mostrarMensagem('Status do personagem salvo com sucesso!');
 
-        // Após salvar, ler o conteúdo do arquivo
+        // Após salvar, ler o conteúdo do localStorage
         await carregarStatus();
     } catch (error) {
         console.error('MyAppLog: Erro ao salvar status do personagem:', JSON.stringify(error));
         mostrarMensagem('Erro ao salvar status do personagem.');
     }
 }
+
 
 async function writeFile(namePath, filePath, data) {
     return new Promise((resolve, reject) => {
@@ -1163,68 +1145,36 @@ async function carregarStatus() {
     }
 
     carregarHabilidades(nome);
-    const dirPath = cordova.file.dataDirectory;
-    const filePath = `${dirPath}${nome}-personagem.json`;
     try {
-        window.resolveLocalFileSystemURL(filePath, function (fileEntry) {
-            fileEntry.file(function (file) {
-                var reader = new FileReader();
-                reader.onloadend = function () {
-                    console.log('MyAppLog: Conteúdo do arquivo lido:', reader.result);
-                    mostrarMensagem('Conteúdo do arquivo: ' + reader.result);  // Adiciona um alerta para verificar o conteúdo lido
-                    const personagemData = JSON.parse(reader.result);
-                    personagem = new Personagem(personagemData);
-                    atualizarInfoPersonagem(personagem); // Atualiza a interface com os dados do personagem
-                };
-                reader.onerror = function (e) {
-                    console.error('MyAppLog: Erro ao ler o arquivo:', JSON.stringify(e));
-                    mostrarMensagem('Erro ao ler o arquivo: ' + JSON.stringify(e));  // Adiciona um alerta para erros de leitura
-                    alert('Conteúdo do arquivo: ' + filePath);
-                };
-                reader.readAsText(file);
-            });
-        }, function (err) {
-            console.error('MyAppLog: Erro ao resolver o caminho do arquivo para leitura:', JSON.stringify(err));
-            mostrarMensagem('Erro ao resolver o caminho do arquivo para leitura: ' + JSON.stringify(err));  // Adiciona um alerta para erros de resolução de caminho
-            alert('Conteúdo do arquivo: ' + filePath);
-        });
+        const data = localStorage.getItem(`${nome}-personagem`);
+        if (data) {
+            const personagemData = JSON.parse(data);
+            personagem = new Personagem(personagemData);
+            atualizarInfoPersonagem(personagem); // Atualiza a interface com os dados do personagem
+            mostrarMensagem('Status do personagem carregado com sucesso.');
+        } else {
+            throw new Error('Dados não encontrados.');
+        }
     } catch (error) {
-        console.error('MyAppLog: Erro inesperado ao ler o arquivo:', JSON.stringify(error));
-        mostrarMensagem('Erro inesperado ao ler o arquivo: ' + JSON.stringify(error));  // Adiciona um alerta para erros inesperados
-        alert('Conteúdo do arquivo: ' + filePath);
+        console.error('MyAppLog: Erro ao carregar status do personagem:', JSON.stringify(error));
+        mostrarMensagem('Erro ao carregar status do personagem.');
     }
 }
 
+
 function listarArquivos() {
-    const dirPath = cordova.file.dataDirectory;
-
-    // Resolve o caminho do diretório
-    window.resolveLocalFileSystemURL(dirPath, function (dirEntry) {
-        // Cria um leitor para o diretório
-        const dirReader = dirEntry.createReader();
-        
-        // Lê o conteúdo do diretório
-        dirReader.readEntries(function (entries) {
-            if (entries.length === 0) {
-                console.log('Nenhum arquivo encontrado.');
-                mostrarMensagem('Nenhum arquivo encontrado.');
-                return;
-            }
-
-            console.log('Arquivos encontrados:');
-            entries.forEach(function (entry) {
-                console.log('Nome do arquivo:', entry.name);
-                mostrarMensagem('Nome do arquivo: ' + entry.name);
-            });
-        }, function (error) {
-            console.error('Erro ao ler o diretório:', JSON.stringify(error));
-            mostrarMensagem('Erro ao ler o diretório: ' + JSON.stringify(error));
-        });
-    }, function (error) {
-        console.error('Erro ao resolver o caminho do diretório:', JSON.stringify(error));
-        mostrarMensagem('Erro ao resolver o caminho do diretório: ' + JSON.stringify(error));
-    });
+    console.log('Arquivos no localStorage:');
+    mostrarMensagem('Arquivos no localStorage:');
+    
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.includes('-personagem') || key.includes('-habilidades')) {
+            console.log('Nome do arquivo:', key);
+            mostrarMensagem('Nome do arquivo: ' + key);
+        }
+    }
 }
+
 
 async function carregarHabilidades2() {
     // Obter os dados de entrada do usuário
@@ -1241,7 +1191,7 @@ async function carregarHabilidades2() {
         return;
     }
 
-    // Chamar a função adicionarHabilidade com os dados capturados
+    // Chamar a funcao adicionarHabilidade com os dados capturados
     try {
         await adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldown, custo, descricao);
     } catch (error) {
@@ -1253,34 +1203,13 @@ async function carregarHabilidades2() {
 
 async function adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldown, custo, descricao) {
     try {
-        const dirPath = cordova.file.dataDirectory;
-        const filePath = `${dirPath}${nomePersonagem}-habilidades.json`;
-        const namePath = `${nomePersonagem}-habilidades.json`;
-
+        const key = `${nomePersonagem}-habilidades`;
         let habilidadesData = { habilidades: [] };
 
-        // Verificar se o arquivo existe e ler o conteúdo
-        try {
-            await new Promise((resolve, reject) => {
-                window.resolveLocalFileSystemURL(filePath, function (fileEntry) {
-                    fileEntry.file(function (file) {
-                        var reader = new FileReader();
-                        reader.onloadend = function () {
-                            habilidadesData = JSON.parse(reader.result);
-                            resolve();
-                        };
-                        reader.onerror = function (e) {
-                            reject(e);
-                        };
-                        reader.readAsText(file);
-                    });
-                }, function (err) {
-                    // Se o arquivo não existir, criar um novo
-                    resolve();
-                });
-            });
-        } catch (error) {
-            console.error('MyAppLog: Erro ao ler o arquivo de habilidades:', JSON.stringify(error));
+        // Verificar se já existem habilidades salvas
+        const data = localStorage.getItem(key);
+        if (data) {
+            habilidadesData = JSON.parse(data);
         }
 
         // Determinar o próximo ID
@@ -1298,15 +1227,15 @@ async function adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldow
 
         habilidadesData.habilidades.push(novaHabilidade);
 
-        // Salvar o arquivo atualizado
-        console.log('MyAppLog: Salvando habilidades em:', filePath);
-        await writeFile(namePath, filePath, JSON.stringify(habilidadesData, null, 2));
+        // Salvar no localStorage
+        console.log('MyAppLog: Salvando habilidades no localStorage.');
+        localStorage.setItem(key, JSON.stringify(habilidadesData, null, 2));
         console.log('MyAppLog: Habilidade adicionada com sucesso!');
         mostrarMensagem('Habilidade adicionada com sucesso!');
 
         // Atualizar a lista de habilidades
-        await listarArquivos();
-        await carregarHabilidades(nomePersonagem)
+        listarArquivos();
+        carregarHabilidades(nomePersonagem);
     } catch (error) {
         console.error('MyAppLog: Erro ao adicionar habilidade:', JSON.stringify(error));
         mostrarMensagem('Erro ao adicionar habilidade.');
@@ -1314,31 +1243,22 @@ async function adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldow
 }
 
 
+
 async function carregarHabilidades(nomePersonagem) {
     try {
-        // Exibir o nome do personagem para verificação
-        mostrarMensagem(`Nome do personagem: ${nomePersonagem}`);
-        
-        // Construir e exibir o caminho do arquivo
-        const filePath = `${cordova.file.dataDirectory}${nomePersonagem}-habilidades.json`;
-        const namePath = `${nomePersonagem}-habilidades.json`;
-
-        // Verificar se o caminho do arquivo está correto
-        console.log('Caminho do arquivo:', filePath);
-
-        // Tentar carregar os dados do arquivo
-        const habilidadesData = await carregarDados(namePath);
-        exibirHabilidades(habilidadesData);
-        
-        // Verificar se os dados foram carregados corretamente
-        mostrarMensagem('Dados das habilidades recebidos.');
-        console.log('Dados das habilidades recebidos:', habilidadesData);
-
-        // Mostrar os dados em um alerta formatado
-        mostrarMensagem(JSON.stringify(habilidadesData, null, 2));
+        const key = `${nomePersonagem}-habilidades`;
+        const data = localStorage.getItem(key);
+        if (data) {
+            const habilidadesData = JSON.parse(data);
+            exibirHabilidades(habilidadesData);
+            mostrarMensagem('Dados das habilidades recebidos.');
+            console.log('Dados das habilidades recebidos:', habilidadesData);
+            mostrarMensagem(JSON.stringify(habilidadesData, null, 2));
+        } else {
+            throw new Error('Dados não encontrados.');
+        }
     } catch (error) {
-        // Adicionar informações detalhadas sobre o erro
-        console.error('Erro ao carregar habilidades:', error);
-        alert(`Erro ao carregar habilidades: ${error.message}`);
+        console.error('MyAppLog: Erro ao carregar habilidades do personagem:', JSON.stringify(error));
+        mostrarMensagem('Erro ao carregar habilidades do personagem.');
     }
 }
