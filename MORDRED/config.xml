@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.mordred.MORDRED" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>M.O.R.D.R.E.D</name>
+    <description>Aplicativo de Manuseio de dados de RPG</description>
+    <author email="dev@example.com" href="http://example.com">Dev</author>
+    <content src="index.html" />
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <allow-navigation href="*" />
+    <access origin="*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+        <plugin name="cordova-plugin-file" spec="6.0.2" />
+        <!-- Adicione outros plugins conforme necessário -->
+    </platform>
+    <platform name="android">
+        <!-- Configura os ícones para Android -->
+        <icon src="www/res/android-icon-36x36.png" density="ldpi" />
+        <icon src="www/res/android-icon-48x48.png" density="mdpi" />
+        <icon src="www/res/android-icon-72x72.png" density="hdpi" />
+        <icon src="www/res/android-icon-96x96.png" density="xhdpi" />
+        <icon src="www/res/android-icon-144x144.png" density="xxhdpi" />
+        <icon src="www/res/android-icon-192x192.png" density="xxxhdpi" />
+        
+        <preference name="SplashScreen" value="screen" />
+        <preference name="SplashScreenDelay" value="3000" />
+        <preference name="SplashScreenBackgroundColor" value="#000000" />
+        <preference name="SplashScreenFadeOut" value="300" />
+        <preference name="SplashScreenScreen" value="#000000" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="www/res/image.png" />
+    
+
+        
+        <!-- Outras configurações específicas para Android -->
+        <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+    </platform>
+    
+    <!-- Configurações para Apple Touch Icons -->
+    <platform name="ios">
+        <icon src="www/res/apple-icon-57x57.png" width="57" height="57" />
+        <icon src="www/res/apple-icon-60x60.png" width="60" height="60" />
+        <icon src="www/res/apple-icon-72x72.png" width="72" height="72" />
+        <icon src="www/res/apple-icon-76x76.png" width="76" height="76" />
+        <icon src="www/res/apple-icon-114x114.png" width="114" height="114" />
+        <icon src="www/res/apple-icon-120x120.png" width="120" height="120" />
+        <icon src="www/res/apple-icon-144x144.png" width="144" height="144" />
+        <icon src="www/res/apple-icon-152x152.png" width="152" height="152" />
+        <icon src="www/res/apple-icon-180x180.png" width="180" height="180" />
+    </platform>
+
+    <!-- Configurações adicionais -->
+    <preference name="theme-color" value="#000000" />
+    <preference name="msapplication-TileColor" value="#000000" />
+    <preference name="msapplication-TileImage" value="www/res/ms-icon-144x144.png" />
+</widget>
