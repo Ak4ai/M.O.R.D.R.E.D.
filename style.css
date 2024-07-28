@@ -2,11 +2,6 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-color: #3e2424; /* Cor de fundo */
-  overflow-x: hidden; /* Evita o scroll horizontal */
-}
-
-body {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,6 +10,10 @@ body {
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  overflow-x: hidden; /* Evita o scroll horizontal */
+}
+
+body {
 }
 
 body::before {
@@ -29,7 +28,6 @@ body::before {
   background-size: cover;
   background-position: inherit;
   background-repeat: inherit;
-  filter: blur(0.75rem); /* Ajuste o valor para o nível de desfoque desejado */
   z-index: -1; /* Coloca o pseudo-elemento atrás do conteúdo do body */
 }
 
