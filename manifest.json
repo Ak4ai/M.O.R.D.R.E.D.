@@ -1,8 +1,8 @@
 {
-    "name": "Seu Projeto",
-    "short_name": "Projeto",
+    "name": "M.O.R.D.R.E.D",
+    "short_name": "MORDRED",
     "description": "Descrição do seu projeto",
-    "start_url": "/index.html",
+    "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
