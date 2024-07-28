@@ -4,8 +4,8 @@
     "description": "Descrição do seu projeto",
     "start_url": "/MORDREDLINUXANDROID/",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#ffffff",
+    "background_color": "#40252591",
+    "theme_color": "#40252591",
     "icons": [
       {
         "src": "android-icon-192x192.png",
