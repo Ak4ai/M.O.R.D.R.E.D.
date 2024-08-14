@@ -970,6 +970,82 @@ function acao(atributo, pericia, numeroVantagens, modificador) {
     return rolarDadosCalculo(valorAtributo, valorPericia, numeroVantagens, modificador);
 }
 
+function rolarDados() {
+    // Obtém os valores dos campos do formulário
+    const formatoVantagem = document.getElementById('formatoVantagem').value;
+    const numTotal = parseInt(document.getElementById('numTotal').value, 10);
+    const somatorio = parseInt(document.getElementById('somatorio').value, 10);
+
+    const tipoDado1 = parseInt(document.getElementById('tipoDado1').value, 10);
+    const numTipoDado1 = parseInt(document.getElementById('numTipoDado1').value, 10);
+
+    const tipoDado2 = document.getElementById('tipoDado2').value ? parseInt(document.getElementById('tipoDado2').value, 10) : null;
+    const numTipoDado2 = parseInt(document.getElementById('numTipoDado2').value, 10);
+
+    const tipoDado3 = document.getElementById('tipoDado3').value ? parseInt(document.getElementById('tipoDado3').value, 10) : null;
+    const numTipoDado3 = parseInt(document.getElementById('numTipoDado3').value, 10);
+
+    // Função para rolar um dado de um tipo específico
+    function rolarDado(tamanho) {
+        return Math.floor(Math.random() * tamanho) + 1;
+    }
+
+    // Função para rolar múltiplos dados
+    function rolarDadosTipo(tipoDado, numDados) {
+        return Array.from({ length: numDados }, () => rolarDado(tipoDado));
+    }
+
+    // Função para interpretar o formato personalizado dos dados de vantagem
+    function interpretarFormato(formato) {
+        const partes = formato.split('d');
+        const numDados = parseInt(partes[0], 10);
+        const tipoDado = parseInt(partes[1], 10);
+        return rolarDadosTipo(tipoDado, numDados);
+    }
+
+    // Array para armazenar os resultados dos dados de vantagem
+    const resultadosVantagem = formatoVantagem ? interpretarFormato(formatoVantagem) : [];
+
+    // Se houver dados de vantagem, pega o maior valor
+    const maiorVantagem = resultadosVantagem.length > 0 ? Math.max(...resultadosVantagem) : 0;
+
+    // Array para armazenar os resultados dos dados totais
+    const resultadosTotal = [];
+
+    // Rolar o número total de dados do tipo 1
+    if (numTipoDado1 > 0) {
+        resultadosTotal.push(...rolarDadosTipo(tipoDado1, numTipoDado1));
+    }
+
+    // Rolar o número total de dados do tipo 2 (se selecionado)
+    if (numTipoDado2 > 0 && tipoDado2) {
+        resultadosTotal.push(...rolarDadosTipo(tipoDado2, numTipoDado2));
+    }
+
+    // Rolar o número total de dados do tipo 3 (se selecionado)
+    if (numTipoDado3 > 0 && tipoDado3) {
+        resultadosTotal.push(...rolarDadosTipo(tipoDado3, numTipoDado3));
+    }
+
+    // Adiciona o maior valor dos dados de vantagem ao total
+    resultadosTotal.push(maiorVantagem);
+    
+    // Calcula o somatório total
+    const somaTotal = resultadosTotal.reduce((a, b) => a + b, 0) + somatorio;
+    
+    // Monta a string para exibir os resultados
+    const resultadoHtml = `
+        <p><strong>Dados de Vantagem Rolados:</strong> ${resultadosVantagem.join(', ') || 'Nenhum dado de vantagem rolado'}</p>
+        <p><strong>Maior Dado de Vantagem:</strong> ${maiorVantagem || 'Nenhum dado de vantagem rolado'}</p>
+        <p><strong>Dados Totais Rolados:</strong> ${resultadosTotal.join(', ')}</p>
+        <p><strong>Somatório:</strong> ${somaTotal}</p>
+    `;
+    
+    // Exibe o resultado na div resultadoRolagem
+    document.getElementById('resultadoRolagem').innerHTML = resultadoHtml;
+}
+
+
 function executarAcao() {
     let atributo = document.getElementById('atributoSelect').value;
     let pericia = document.getElementById('periciaSelect').value;
