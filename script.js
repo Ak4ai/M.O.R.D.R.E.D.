@@ -209,6 +209,7 @@ class HabilidadeBase {
     constructor(nome, personagem) {
         this.nome = nome;
         this.personagem = personagem;
+        this.id = nome; // Define o ID da habilidade igual ao nome
     }
 
     rolarDado(lados, quantidade = 1) {
@@ -536,48 +537,52 @@ function openSubtab(tab, subtab) {
     tabElement.querySelector(`div[onclick="openSubtab('${tab}', '${subtab}')"]`).classList.add('active');
 }
 
-// Funcao para exibir as habilidades na interface
-// Funcao para exibir as habilidades na interface
+function limparHabilidades() {
+    const escolhaHabilidadesDiv = document.getElementById('escolha-habilidades');
+    const existingButtons = Array.from(escolhaHabilidadesDiv.getElementsByTagName('button'));
+
+    // Imprime os IDs dos botões que serão removidos
+    existingButtons.forEach(button => {
+        const id = button.getAttribute('data-id');
+        if (id === '1') {
+            console.log(`Removendo botão com ID: ${id}`);
+        }
+    });
+
+    // Remove apenas os botões com ID igual a 1
+    existingButtons.forEach(button => {
+        const id = button.getAttribute('data-id');
+        if (id >= '1') {
+            escolhaHabilidadesDiv.removeChild(button);
+        }
+    });
+}
+
 function exibirHabilidades(habilidadesData) {
     try {
         console.log("Dados de habilidades carregados:", habilidadesData);
 
-        const escolhaHabilidadesDiv = document.getElementById('escolha-habilidades');
-        
-        // Obter todos os botões existentes na interface
-        const existingButtons = Array.from(escolhaHabilidadesDiv.getElementsByTagName('button'));
+        // Limpa as habilidades carregadas anteriormente
+        limparHabilidades();
 
-        // Obter IDs das habilidades já existentes na interface
-        const existingIds = existingButtons.map(button => button.getAttribute('data-id'));
+        const escolhaHabilidadesDiv = document.getElementById('escolha-habilidades');
 
         habilidadesData.habilidades.forEach(habilidade => {
-            if (!existingIds.includes(habilidade.id)) {
-                const button = document.createElement('button');
-                button.textContent = habilidade.nome;
-                button.setAttribute('data-id', habilidade.id);
-                button.onclick = function() {
-                    const id = this.getAttribute('data-id');
-                    console.log(`Botão clicado: ${id}`);
-                    escolherHabilidade(id, habilidadesData); // Passa habilidadesData como parâmetro
-                };
-                escolhaHabilidadesDiv.appendChild(button);
-            }
+            const button = document.createElement('button');
+            button.textContent = habilidade.nome;
+            button.setAttribute('data-id', habilidade.id);
+            button.onclick = function() {
+                const id = this.getAttribute('data-id');
+                console.log(`Botão clicado: ${id}`);
+                escolherHabilidade(id, habilidadesData); // Passa habilidadesData como parâmetro
+            };
+            escolhaHabilidadesDiv.appendChild(button);
         });
     } catch (error) {
         console.error('Erro ao processar dados de habilidades:', error);
     }
 }
 
-
-
-function atualizarStatus(status) {
-    const statusElement = document.getElementById('status');
-    if (statusElement) {
-        statusElement.textContent = `Status: ${status}`;
-    } else {
-        console.error('Elemento de status não encontrado.');
-    }
-}
 
 function atualizarStatus(status) {
     const statusElement = document.getElementById('status');
@@ -1238,20 +1243,6 @@ async function carregarStatus() {
 }
 
 
-function listarArquivos() {
-    console.log('Arquivos no localStorage:');
-    mostrarMensagem('Arquivos no localStorage:');
-    
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.includes('-personagem') || key.includes('-habilidades')) {
-            console.log('Nome do arquivo:', key);
-            mostrarMensagem('Nome do arquivo: ' + key);
-        }
-    }
-}
-
-
 async function carregarHabilidades2() {
     // Obter os dados de entrada do usuário
     const nomePersonagem = document.getElementById('nomeCarregarHab').value;
@@ -1318,14 +1309,12 @@ async function adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldow
     }
 }
 
-
-
 async function carregarHabilidades(nomePersonagem) {
     try {
         const key = `${nomePersonagem}-habilidades`;
         const data = localStorage.getItem(key);
         if (data) {
-            const habilidadesData = JSON.parse(data);
+            habilidadesData = await carregarDados(key);
             exibirHabilidades(habilidadesData);
             mostrarMensagem('Dados das habilidades recebidos.');
             console.log('Dados das habilidades recebidos:', habilidadesData);
@@ -1336,5 +1325,99 @@ async function carregarHabilidades(nomePersonagem) {
     } catch (error) {
         console.error('MyAppLog: Erro ao carregar habilidades do personagem:', JSON.stringify(error));
         mostrarMensagem('Erro ao carregar habilidades do personagem.');
+    }
+}
+
+function exportarArquivo() {
+    const nomeArquivo = document.getElementById('nomeArquivoExportar').value.trim();
+    if (!nomeArquivo) {
+        alert('Por favor, insira um nome para o arquivo.');
+        return;
+    }
+    
+    const dados = localStorage.getItem(nomeArquivo);
+    if (dados === null) {
+        alert('Arquivo não encontrado no localStorage.');
+        return;
+    }
+
+    try {
+        // Cria um Blob com os dados a serem exportados
+        const blob = new Blob([dados], { type: 'text/plain;charset=utf-8' });
+
+        // Cria um link temporário para fazer o download
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = nomeArquivo;
+
+        // Adiciona o link ao DOM, clica nele e remove-o
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error('Erro ao exportar arquivo:', error);
+    }
+}
+
+function importarArquivo() {
+    const inputElement = document.getElementById('inputArquivoImportar');
+    const arquivo = inputElement.files[0];
+    if (!arquivo) {
+        alert('Por favor, selecione um arquivo para importar.');
+        return;
+    }
+
+    const nomeArquivoSemExtensao = removerExtensao(arquivo.name);
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const dados = e.target.result;
+        try {
+            // Armazena o conteúdo do arquivo no localStorage com o nome do arquivo sem extensão
+            localStorage.setItem(nomeArquivoSemExtensao, dados);
+            alert('Arquivo importado com sucesso.');
+        } catch (error) {
+            console.error('Erro ao importar arquivo:', error);
+        }
+    };
+
+    reader.readAsText(arquivo);
+}
+
+function removerExtensao(nomeArquivo) {
+    return nomeArquivo.replace(/\.[^/.]+$/, ""); // Remove a extensão do arquivo
+}
+
+function listarArquivos() {
+    console.log('Arquivos no localStorage:');
+    mostrarMensagem('Arquivos no localStorage:');
+    
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.includes('-personagem') || key.includes('-habilidades')) {
+            console.log('Nome do arquivo:', key);
+            mostrarMensagem('Nome do arquivo: ' + key);
+        }
+    }
+}
+
+function removerArquivo() {
+    const nomeArquivo = document.getElementById('nomeArquivoRemover').value.trim();
+    if (!nomeArquivo) {
+        alert('Por favor, insira o nome do arquivo a ser removido.');
+        return;
+    }
+    
+    if (localStorage.getItem(nomeArquivo) === null) {
+        alert('Arquivo não encontrado no localStorage.');
+        return;
+    }
+    
+    try {
+        // Remove o arquivo do localStorage
+        localStorage.removeItem(nomeArquivo);
+        alert('Arquivo removido com sucesso.');
+    } catch (error) {
+        console.error('Erro ao remover arquivo:', error);
     }
 }

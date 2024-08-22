@@ -241,6 +241,7 @@
                 <div class="subtabs">
                     <div class="subtab active" onclick="openSubtab('config', 'status1')">Status</div>
                     <div class="subtab" onclick="openSubtab('config', 'habilidades1')">Habilidades</div>
+                    <div class="subtab" onclick="openSubtab('config', 'habilidades2')">SaveData</div>
                 </div>
                 <div id="status1" class="subcontent active">
                     <h2>Atualizar Status</h2>
@@ -352,6 +353,8 @@
                         <input type="text" id="nomeCarregar" name="nomeCarregar" required>
                         <br>
                         <button type="button" onclick="carregarStatus()">Carregar</button>
+                        <h2>Listar Arquivos</h2>
+                        <button type="button" onclick="listarArquivos()">Listar Arquivos Salvos</button>
                 </div>
                 <div id="habilidades1" class="subcontent">
                     <h2>Carregar Habilidades</h2>
@@ -374,7 +377,21 @@
                     <textarea id="descricaoHabilidade" name="descricaoHabilidade" required></textarea>
                     <br>
                     <button type="button" onclick="carregarHabilidades2()">Carregar Habilidade</button>
-                </div>                
+                </div>      
+                <div id="habilidades2" class="subcontent">
+                    <h2>Exportar e Importar Data</h2>
+                    <br>
+                    <input type="text" id="nomeArquivoExportar" placeholder="Nome do arquivo para exportar">
+                    <button type="button" onclick="exportarArquivo()">Exportar Arquivo</button>
+                    <br><br>
+                    <input type="file" id="inputArquivoImportar">
+                    <button type="button" onclick="importarArquivo()">Importar Arquivo</button>
+                    <br><br>
+                    <input type="text" id="nomeArquivoRemover" placeholder="Nome do arquivo para remover">
+                    <button type="button" onclick="removerArquivo()">Remover Arquivo</button>
+                    <br><br>
+                    <button type="button" onclick="listarArquivos()">Listar Arquivos no LocalStorage</button>
+                </div>                                                                                                                          
             </div>            
             
           
@@ -573,8 +590,6 @@
             </div>            
                       
       </div>
-      <script src="cordova.js"></script>
-      <script src="js/index.js"></script>
       <script src="script.js"></script>
   </body>
   </html>
